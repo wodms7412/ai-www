@@ -14,97 +14,69 @@ def load_data():
 
 df, mbti_cols = load_data()
 
-st.title("🌍 국가별 MBTI 데이터 시각화")
+st.title("🌍 MBTI 유형별 상위 국가 시각화")
 
-tab1, tab2 = st.tabs(["📊 국가별 MBTI 비율", "🏆 MBTI 유형별 상위 국가"])
+# --- MBTI 선택 ---
+selected_mbti = st.selectbox("MBTI 유형을 선택하세요:", mbti_cols)
 
-# ------------------------------- #
-# 탭 1: 국가 선택 -> MBTI 비율 보기
-# ------------------------------- #
-with tab1:
-    st.subheader("국가별 MBTI 비율 보기")
-    selected_country = st.selectbox("국가를 선택하세요:", sorted(df["Country"].unique()))
+# --- 선택된 MBTI에 대한 국가별 데이터 ---
+sorted_df = df[["Country", selected_mbti]].sort_values(by=selected_mbti, ascending=False).reset_index(drop=True)
 
-    country_data = df[df["Country"] == selected_country][mbti_cols].T.reset_index()
-    country_data.columns = ["MBTI", "비율"]
-    country_data["비율"] = country_data["비율"].astype(float)
+# 상위 10개국 추출
+top10 = sorted_df.head(10).copy()
 
-    # 1등 타입
-    top_mbti = country_data.loc[country_data["비율"].idxmax(), "MBTI"]
+# "South Korea" 또는 "Korea" 포함된 행 찾기
+korea_row = sorted_df[sorted_df["Country"].str.lower().str.contains("korea", na=False)]
 
-    # 색상 설정: 1등 빨강, 나머지 파랑 그라데이션
-    colors = [
-        "red" if mbti == top_mbti else f"rgba(0,0,255,{0.3 + 0.7 * (val / country_data['비율'].max())})"
-        for mbti, val in zip(country_data["MBTI"], country_data["비율"])
+# 만약 Korea가 top10 안에 없으면 추가
+if not korea_row.empty:
+    if korea_row["Country"].iloc[0] not in top10["Country"].values:
+        top10 = pd.concat([top10, korea_row.iloc[[0]]], ignore_index=True)
+else:
+    # South Korea가 데이터에 없을 경우 예외 처리
+    st.warning("⚠️ 데이터에 'South Korea'가 존재하지 않습니다. CSV 파일을 확인해주세요.")
+
+# 색상 설정
+colors = []
+top_country = top10.iloc[0]["Country"]
+
+for c in top10["Country"]:
+    if "korea" in c.lower():
+        colors.append("blue")        # 한국: 파란색
+    elif c == top_country:
+        colors.append("yellow")      # 1등: 노랑색
+    else:
+        colors.append("lightgray")   # 나머지: 회색
+
+# --- 그래프 ---
+fig = go.Figure(
+    data=[
+        go.Bar(
+            x=top10["Country"],
+            y=top10[selected_mbti],
+            marker_color=colors,
+            hovertemplate="<b>%{x}</b><br>비율: %{y:.2%}<extra></extra>",
+        )
     ]
+)
 
-    fig = go.Figure(
-        data=[
-            go.Bar(
-                x=country_data["MBTI"],
-                y=country_data["비율"],
-                marker_color=colors,
-                hovertemplate="<b>%{x}</b><br>비율: %{y:.2%}<extra></extra>",
-            )
-        ]
-    )
+fig.update_layout(
+    title=f"🏆 {selected_mbti} 유형 비율이 높은 국가 Top 10",
+    xaxis_title="국가",
+    yaxis_title="비율",
+    template="plotly_white",
+    showlegend=False,
+)
 
-    fig.update_layout(
-        title=f"{selected_country}의 MBTI 분포",
-        xaxis_title="MBTI 유형",
-        yaxis_title="비율",
-        template="plotly_white",
-        showlegend=False,
-    )
+st.plotly_chart(fig, use_container_width=True)
 
-    st.plotly_chart(fig, use_container_width=True)
-
-# ------------------------------- #
-# 탭 2: MBTI 선택 -> 상위 국가 보기
-# ------------------------------- #
-with tab2:
-    st.subheader("MBTI 유형별 상위 국가 보기")
-    selected_mbti = st.selectbox("MBTI 유형을 선택하세요:", mbti_cols)
-
-    sorted_df = df[["Country", selected_mbti]].sort_values(by=selected_mbti, ascending=False)
-    top_country = sorted_df.iloc[0]["Country"]
-
-    # 색상 설정: 1등 노랑, 한국 파랑, 나머지 회색
-    colors = []
-    for c in sorted_df["Country"]:
-        if "korea" in c.lower():
-            colors.append("blue")
-        elif c == top_country:
-            colors.append("yellow")
-        else:
-            colors.append("lightgray")
-
-    fig2 = go.Figure(
-        data=[
-            go.Bar(
-                x=sorted_df["Country"],
-                y=sorted_df[selected_mbti],
-                marker_color=colors,
-                hovertemplate="<b>%{x}</b><br>비율: %{y:.2%}<extra></extra>",
-            )
-        ]
-    )
-
-    fig2.update_layout(
-        title=f"{selected_mbti} 유형 비율이 높은 국가 순위",
-        xaxis_title="국가",
-        yaxis_title="비율",
-        template="plotly_white",
-        showlegend=False,
-    )
-
-    st.plotly_chart(fig2, use_container_width=True)
-
+# --- 설명 ---
 st.markdown(
     """
     ---
     **🎨 색상 규칙**
-    - 🟥 [탭1] 국가별 MBTI 보기 → 1등: 빨강 / 나머지: 파랑 그라데이션  
-    - 🟨 [탭2] MBTI별 국가 순위 → 1등 국가: 노랑 / 한국: 파랑 / 나머지: 회색  
+    - 🟨 1등 국가 → 노랑  
+    - 🔵 South Korea → 파랑 (Top10에 없을 시 자동 추가)  
+    - ⚪ 나머지 국가 → 회색  
     """
 )
