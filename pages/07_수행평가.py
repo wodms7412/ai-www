@@ -8,35 +8,82 @@ INGREDIENTS = [
     "카레 (Curry Powder)", "양파 (Onion)"
 ]
 
-# 가상의 사용량 데이터 (실제 통계가 아닌 데모용 데이터)
+# 가상의 사용량 데이터: 상위 10개 국가 및 사용량 (실제 통계 아님)
 data = {
     'Ingredient': ['마늘', '토마토', '쌀', '고추', '파스타', '감자', '코코넛', '콩', '카레', '양파'],
-    'Country_1': ['한국', '이탈리아', '중국', '멕시코', '이탈리아', '페루', '태국', '브라질', '인도', '프랑스'],
-    'Usage_1': [80, 75, 90, 85, 95, 70, 88, 77, 92, 65],
-    'Country_2': ['스페인', '그리스', '인도', '태국', '미국', '러시아', '인도네시아', '멕시코', '영국', '독일'],
-    'Usage_2': [60, 50, 70, 65, 55, 60, 68, 55, 50, 40],
+    'Country_1': ['한국', '이탈리아', '중국', '멕시코', '이탈리아', '페루', '태국', '브라질', '인도', '프랑스'], 'Usage_1': [95, 90, 99, 98, 99, 95, 98, 92, 99, 90],
+    'Country_2': ['스페인', '그리스', '인도', '태국', '미국', '러시아', '인도네시아', '멕시코', '영국', '독일'], 'Usage_2': [88, 85, 90, 90, 80, 85, 90, 85, 75, 70],
+    'Country_3': ['인도', '프랑스', '베트남', '인도', '스페인', '폴란드', '인도', '콜롬비아', '태국', '미국'], 'Usage_3': [75, 70, 80, 75, 70, 70, 80, 70, 60, 60],
+    'Country_4': ['이집트', '터키', '필리핀', '페루', '그리스', '영국', '스리랑카', '페루', '일본', '이탈리아'], 'Usage_4': [65, 60, 70, 65, 60, 65, 70, 60, 50, 50],
+    'Country_5': ['그리스', '미국', '브라질', '중국', '프랑스', '아일랜드', '중국', '아르헨티나', '파키스탄', '스페인'], 'Usage_5': [55, 50, 60, 55, 50, 55, 60, 50, 40, 40],
+    'Country_6': ['프랑스', '스페인', '일본', '스페인', '독일', '칠레', '브라질', '인도', '파키스탄', '중국'], 'Usage_6': [45, 40, 50, 45, 40, 45, 50, 40, 30, 30],
+    'Country_7': ['러시아', '독일', '태국', '콜롬비아', '터키', '프랑스', '베트남', '나이지리아', '말레이시아', '영국'], 'Usage_7': [35, 30, 40, 35, 30, 35, 40, 30, 20, 20],
+    'Country_8': ['미국', '브라질', '이란', '미국', '브라질', '이탈리아', '미국', '캐나다', '싱가포르', '브라질'], 'Usage_8': [25, 20, 30, 25, 20, 25, 30, 20, 10, 10],
+    'Country_9': ['멕시코', '영국', '한국', '아르헨티나', '인도', '네덜란드', '파키스탄', '이탈리아', '호주', '캐나다'], 'Usage_9': [15, 10, 20, 15, 10, 15, 20, 10, 5, 5],
+    'Country_10': ['캐나다', '일본', '이탈리아', '캐나다', '멕시코', '캐나다', '아프리카', '영국', '뉴질랜드', '한국'], 'Usage_10': [10, 5, 10, 5, 5, 10, 10, 5, 1, 1],
 }
 df_base = pd.DataFrame(data)
 
-# 국가별 추천 음식 데이터
+# 국가별 추천 음식 데이터 (음식 이름, 짧은 설명, 가상 이미지 URL 포함)
 FOOD_RECOMMENDATIONS = {
-    '한국': ['김치찌개', '비빔밥', '불고기'],
-    '이탈리아': ['피자 마르게리타', '라자냐', '티라미수'],
-    '중국': ['마파두부', '베이징 덕', '딤섬'],
-    '멕시코': ['타코', '엔칠라다', '퀘사디아'],
-    '페루': ['세비체', '로모 살타도', '아히 데 가이나'],
-    '태국': ['팟타이', '똠얌꿍', '그린 커리'],
-    '인도': ['탄두리 치킨', '난 (Naan)', '사모사'],
-    '스페인': ['파에야', '타파스', '가스파초'],
-    '브라질': ['페이조아다', '슈하스코', '파스텔'],
-    '프랑스': ['크루아상', '라타투이', '에스카르고'],
+    '한국': [
+        {'name': '김치찌개', 'desc': '매콤하고 시큼한 한국의 대표 국물 요리.', 'img': 'http://placehold.it/150x100?text=Kimchi_Jjigae'},
+        {'name': '비빔밥', 'desc': '여러 나물과 고추장을 섞어 먹는 영양 만점 밥 요리.', 'img': 'http://placehold.it/150x100?text=Bibimbap'},
+        {'name': '불고기', 'desc': '달콤한 간장 양념에 재운 소고기 구이.', 'img': 'http://placehold.it/150x100?text=Bulgogi'}
+    ],
+    '이탈리아': [
+        {'name': '피자 마르게리타', 'desc': '토마토, 모짜렐라, 바질로 만든 나폴리 피자의 기본.', 'img': 'http://placehold.it/150x100?text=Pizza'},
+        {'name': '라자냐', 'desc': '넓적한 파스타 시트 사이에 고기 소스와 치즈를 겹친 요리.', 'img': 'http://placehold.it/150x100?text=Lasagna'},
+        {'name': '티라미수', 'desc': '커피에 적신 레이디핑거와 마스카르포네 치즈로 만든 디저트.', 'img': 'http://placehold.it/150x100?text=Tiramisu'}
+    ],
+    '중국': [
+        {'name': '마파두부', 'desc': '두부를 매콤한 양념에 끓여낸 사천 지방의 요리.', 'img': 'http://placehold.it/150x100?text=Mapo_Tofu'},
+        {'name': '베이징 덕', 'desc': '바삭하게 구워낸 오리 껍질을 춘장, 파와 함께 싸먹는 요리.', 'img': 'http://placehold.it/150x100?text=Peking_Duck'},
+        {'name': '딤섬', 'desc': '작은 접시에 다양한 종류의 만두와 간식을 담아낸 광둥 요리.', 'img': 'http://placehold.it/150x100?text=Dimsum'}
+    ],
+    '멕시코': [
+        {'name': '타코', 'desc': '작은 토르티야에 고기, 채소, 살사를 올려 먹는 대표적인 간편식.', 'img': 'http://placehold.it/150x100?text=Taco'},
+        {'name': '엔칠라다', 'desc': '토르티야에 속을 채우고 소스를 얹어 오븐에 구운 요리.', 'img': 'http://placehold.it/150x100?text=Enchilada'},
+        {'name': '퀘사디아', 'desc': '치즈를 넣은 토르티야를 구워 반으로 접어 만든 요리.', 'img': 'http://placehold.it/150x100?text=Quesadilla'}
+    ],
+    '페루': [
+        {'name': '세비체', 'desc': '생선을 레몬이나 라임즙에 재워 익힌 상큼한 해산물 샐러드.', 'img': 'http://placehold.it/150x100?text=Ceviche'},
+        {'name': '로모 살타도', 'desc': '쇠고기, 감자튀김, 야채를 볶아 만든 페루식 볶음 요리.', 'img': 'http://placehold.it/150x100?text=Lomo_Saltado'},
+        {'name': '아히 데 가이나', 'desc': '닭고기를 매콤한 크림 소스에 넣어 만든 부드러운 스튜.', 'img': 'http://placehold.it/150x100?text=Aji_de_Gallina'}
+    ],
+    '태국': [
+        {'name': '팟타이', 'desc': '새우, 숙주 등을 넣고 볶은 태국의 대표적인 볶음 쌀국수.', 'img': 'http://placehold.it/150x100?text=Pad_Thai'},
+        {'name': '똠얌꿍', 'desc': '새우, 레몬그라스, 고추 등을 넣은 세계 3대 수프 중 하나.', 'img': 'http://placehold.it/150x100?text=Tom_Yum_Goong'},
+        {'name': '그린 커리', 'desc': '코코넛 밀크와 그린 커리 페이스트를 넣은 향긋한 커리.', 'img': 'http://placehold.it/150x100?text=Green_Curry'}
+    ],
+    '인도': [
+        {'name': '탄두리 치킨', 'desc': '요구르트와 향신료에 재워 탄두르에서 구운 닭고기.', 'img': 'http://placehold.it/150x100?text=Tandoori'},
+        {'name': '난 (Naan)', 'desc': '탄두르에서 구워낸 인도의 대표적인 납작한 빵.', 'img': 'http://placehold.it/150x100?text=Naan'},
+        {'name': '사모사', 'desc': '감자와 완두콩 등을 채워 삼각형으로 튀겨낸 만두.', 'img': 'http://placehold.it/150x100?text=Samosa'}
+    ],
+    '브라질': [
+        {'name': '페이조아다', 'desc': '검은콩과 돼지고기를 넣어 끓인 브라질의 전통 스튜.', 'img': 'http://placehold.it/150x100?text=Feijoada'},
+        {'name': '슈하스코', 'desc': '쇠고기, 돼지고기 등 다양한 고기를 꼬치에 꿰어 구운 바비큐.', 'img': 'http://placehold.it/150x100?text=Churrasco'},
+        {'name': '파스텔', 'desc': '얇은 반죽에 속을 채워 튀긴 브라질식 튀김 만두.', 'img': 'http://placehold.it/150x100?text=Pastel'}
+    ],
+    '프랑스': [
+        {'name': '크루아상', 'desc': '버터 풍미가 가득한 초승달 모양의 바삭한 빵.', 'img': 'http://placehold.it/150x100?text=Croissant'},
+        {'name': '라타투이', 'desc': '가지, 호박, 토마토 등을 올리브 오일에 볶아 만든 요리.', 'img': 'http://placehold.it/150x100?text=Ratatouille'},
+        {'name': '에스카르고', 'desc': '마늘 버터로 양념한 달팽이 요리.', 'img': 'http://placehold.it/150x100?text=Escargot'}
+    ],
+    # Country_1에 없는 국가들은 임의로 추가
+    '스페인': [
+        {'name': '파에야', 'desc': '쌀에 해산물, 고기, 사프란을 넣고 만든 스페인식 볶음밥.', 'img': 'http://placehold.it/150x100?text=Paella'},
+        {'name': '타파스', 'desc': '와인이나 술과 곁들이는 다양한 종류의 작은 요리.', 'img': 'http://placehold.it/150x100?text=Tapas'},
+        {'name': '가스파초', 'desc': '토마토와 야채를 차갑게 갈아 마시는 스페인식 수프.', 'img': 'http://placehold.it/150x100?text=Gazpacho'}
+    ],
 }
 
 
 # --- Streamlit 앱 메인 함수 ---
 def main():
     st.set_page_config(page_title="음식 재료 분석기", layout="wide")
-    st.title("🍜 음식 재료별 국가 사용량 분석기")
+    st.title("🍜 재료별 국가 사용량 분석기 (10개국)")
     st.markdown("---")
 
     # 2. 🎈 재료 선택 (사이드바)
@@ -46,7 +93,6 @@ def main():
         INGREDIENTS
     )
 
-    # 재료 이름만 추출
     ingredient_name = selected_ingredient.split(' ')[0]
 
     st.header(f"선택된 재료: **{selected_ingredient}**")
@@ -56,20 +102,22 @@ def main():
     try:
         selected_row = df_base[df_base['Ingredient'] == ingredient_name].iloc[0]
 
-        # --- 재료 사용량 그래프 생성 ---
+        # --- 재료 사용량 그래프를 위한 데이터 준비 (10개 국가) ---
+        countries = [selected_row[f'Country_{i}'] for i in range(1, 11)]
+        usages = [selected_row[f'Usage_{i}'] for i in range(1, 11)]
+        
         chart_data = pd.DataFrame({
-            'Country': [selected_row['Country_1'], selected_row['Country_2']],
-            'Usage': [selected_row['Usage_1'], selected_row['Usage_2']],
+            'Country': countries,
+            'Usage': usages,
         }).set_index('Country')
 
-        st.subheader(f"📊 {selected_ingredient}을(를) 많이 쓰는 국가 Top 2 (가상 데이터)")
-        # Streamlit 내장 차트 사용
+        st.subheader(f"📊 {selected_ingredient}을(를) 많이 쓰는 국가 Top 10 (가상 데이터)")
+        # 그래프 영역을 넓게 확보
         st.bar_chart(chart_data)
 
         st.markdown("---")
 
-        # --- 추천 음식 표시 ---
-        # 가장 사용량이 높은 국가 (Country_1)
+        # --- 추천 음식 (Top 1 국가) 표시: 이미지와 짧은 설명 추가 ---
         selected_country = selected_row['Country_1']
 
         st.subheader(f"🍽️ 재료를 가장 많이 쓰는 국가, **{selected_country}**의 추천 음식 3가지")
@@ -77,15 +125,18 @@ def main():
         if selected_country in FOOD_RECOMMENDATIONS:
             foods = FOOD_RECOMMENDATIONS[selected_country]
             
-            # 컬럼을 사용하여 정리된 형태로 표시
+            # 3개의 추천 음식을 컬럼으로 분할
             col1, col2, col3 = st.columns(3)
             
-            with col1:
-                st.info(f"🥇 1. **{foods[0]}**")
-            with col2:
-                st.info(f"🥈 2. **{foods[1]}**")
-            with col3:
-                st.info(f"🥉 3. **{foods[2]}**")
+            for i, col in enumerate([col1, col2, col3]):
+                with col:
+                    food = foods[i]
+                    # 순위 표시
+                    st.metric(f"추천 {i+1}", food['name'])
+                    # 이미지 표시 (가상 URL 사용)
+                    st.image(food['img'], caption=food['name'], width=200)
+                    # 짧은 설명
+                    st.caption(f"_{food['desc']}_")
                 
         else:
             st.warning(f"죄송합니다, {selected_country}에 대한 추천 음식 정보가 부족합니다.")
@@ -94,7 +145,7 @@ def main():
         st.error(f"데이터베이스에 **{ingredient_name}** 재료 정보가 없습니다. 관리자에게 문의하세요.")
         
     st.markdown("---")
-    st.caption("🚨 이 앱의 데이터(사용량, 추천 음식)는 **데모를 위한 가상의 정보**입니다.")
+    st.caption("🚨 이 앱의 데이터(사용량, 추천 음식)와 이미지는 **데모를 위한 가상의 정보**입니다.")
 
 if __name__ == "__main__":
     main()
