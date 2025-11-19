@@ -71,7 +71,6 @@ FOOD_RECOMMENDATIONS = {
         {'name': '라타투이', 'desc': '가지, 호박, 토마토 등을 올리브 오일에 볶아 만든 요리.', 'img': 'http://placehold.it/150x100?text=Ratatouille'},
         {'name': '에스카르고', 'desc': '마늘 버터로 양념한 달팽이 요리.', 'img': 'http://placehold.it/150x100?text=Escargot'}
     ],
-    # Country_1에 없는 국가들은 임의로 추가
     '스페인': [
         {'name': '파에야', 'desc': '쌀에 해산물, 고기, 사프란을 넣고 만든 스페인식 볶음밥.', 'img': 'http://placehold.it/150x100?text=Paella'},
         {'name': '타파스', 'desc': '와인이나 술과 곁들이는 다양한 종류의 작은 요리.', 'img': 'http://placehold.it/150x100?text=Tapas'},
@@ -83,10 +82,9 @@ FOOD_RECOMMENDATIONS = {
 # --- Streamlit 앱 메인 함수 ---
 def main():
     st.set_page_config(page_title="음식 재료 분석기", layout="wide")
-    st.title("🍜 재료별 국가 사용량 분석기 (10개국)")
+    st.title("🍜 재료별 국가 사용량 분석기 (순차 정렬)")
     st.markdown("---")
 
-    # 2. 🎈 재료 선택 (사이드바)
     st.sidebar.header("재료를 선택하세요")
     selected_ingredient = st.sidebar.selectbox(
         '어떤 재료에 대해 알아보고 싶으신가요?',
@@ -98,7 +96,6 @@ def main():
     st.header(f"선택된 재료: **{selected_ingredient}**")
     st.markdown("---")
 
-    # 3. 📈 그래프 및 음식 추천 로직
     try:
         selected_row = df_base[df_base['Ingredient'] == ingredient_name].iloc[0]
 
@@ -106,36 +103,37 @@ def main():
         countries = [selected_row[f'Country_{i}'] for i in range(1, 11)]
         usages = [selected_row[f'Usage_{i}'] for i in range(1, 11)]
         
+        # DataFrame 생성
         chart_data = pd.DataFrame({
             'Country': countries,
             'Usage': usages,
-        }).set_index('Country')
+        })
+        
+        # ⭐ 핵심 수정: Usage 기준으로 내림차순 정렬
+        chart_data = chart_data.sort_values(by='Usage', ascending=False).set_index('Country')
 
-        st.subheader(f"📊 {selected_ingredient}을(를) 많이 쓰는 국가 Top 10 (가상 데이터)")
-        # 그래프 영역을 넓게 확보
+        st.subheader(f"📊 {selected_ingredient}을(를) 많이 쓰는 국가 Top 10 (순위별 정렬)")
+        # Streamlit 내장 차트 사용
         st.bar_chart(chart_data)
 
         st.markdown("---")
 
-        # --- 추천 음식 (Top 1 국가) 표시: 이미지와 짧은 설명 추가 ---
-        selected_country = selected_row['Country_1']
+        # --- 추천 음식 (Top 1 국가) 표시 ---
+        # 정렬된 데이터프레임에서 가장 첫 번째 국가가 Top 1 국가임
+        selected_country = chart_data.index[0] 
 
         st.subheader(f"🍽️ 재료를 가장 많이 쓰는 국가, **{selected_country}**의 추천 음식 3가지")
         
         if selected_country in FOOD_RECOMMENDATIONS:
             foods = FOOD_RECOMMENDATIONS[selected_country]
             
-            # 3개의 추천 음식을 컬럼으로 분할
             col1, col2, col3 = st.columns(3)
             
             for i, col in enumerate([col1, col2, col3]):
                 with col:
                     food = foods[i]
-                    # 순위 표시
                     st.metric(f"추천 {i+1}", food['name'])
-                    # 이미지 표시 (가상 URL 사용)
                     st.image(food['img'], caption=food['name'], width=200)
-                    # 짧은 설명
                     st.caption(f"_{food['desc']}_")
                 
         else:
@@ -149,3 +147,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
