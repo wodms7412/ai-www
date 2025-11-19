@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+
 # 1. 📋 음식 재료 및 가상 데이터 설정
 # 10가지 재료 정의
 INGREDIENTS = [
