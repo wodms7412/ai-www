@@ -2,31 +2,30 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-st.title("서울 일부 지역별 음식점 수 분석 (실제 수치 기반)")
+st.title("서울 25개 자치구 음식점／식품위생업소 수 비교")
 
-# 실제 자료 기반 예시 데이터 (가능한 수치로)
-data = {
-    "지역": ["강남구", "송파구", "서초구", "마포구", "용산구"],
-    "음식점수": [
-        17845,   # 강남구: 언론 보도 수치 :contentReference[oaicite:3]{index=3}
-        15000,   # 송파구: 예측치 (실제 정확한 공개 수치 확인 필요)
-        12000,   # 서초구: 예측치
-        14000,   # 마포구: 예측치
-        11000    # 용산구: 예측치
-    ]
-}
+# 데이터 파일 경로 (다운로드 받은 CSV 파일명으로 변경하세요)
+csv_file = "Seoul_FoodHygiene_Upsos_2023.csv"  # 예시 파일명
 
-df = pd.DataFrame(data)
+# CSV 읽기 (실제 파일에 맞게 encoding/sep/columns 조정)
+df = pd.read_csv(csv_file, encoding='utf-8')
 
-st.subheader("📊 서울 지역별 음식점 수 (표)")
+# 컬럼명 예시: '자치구명', '업소수'
+# 실제 컬럼명이 다르면 아래 부분을 수정하세요
+df = df[['자치구명', '업소수']].dropna()
+
+df = df.rename(columns={'자치구명':'지역', '업소수':'업소수'})
+
+st.subheader("📊 표: 자치구별 업소수")
 st.dataframe(df)
 
-st.subheader("📈 지역별 음식점 수 막대그래프")
-plt.figure(figsize=(10,6))
-plt.bar(df["지역"], df["음식점수"], color='skyblue')
-plt.xticks(rotation=45)
-plt.ylabel("음식점 수 (개)")
-plt.title("서울 일부 지역별 음식점 수")
+st.subheader("📈 막대그래프: 자치구별 업소수")
+plt.figure(figsize=(12,8))
+plt.bar(df['지역'], df['업소수'], color='skyblue')
+plt.xticks(rotation=90)
+plt.ylabel("업소수 (건)")
+plt.title("서울 25개 자치구의 식품위생업소 수 비교")
 st.pyplot(plt)
 
-st.write("※ 수치는 가능한 실제 자료 기반이지만, 일부 지역은 예측치로 보완되어 있습니다.")
+st.write("※ 데이터 출처: 서울열린데이터광장 ‘서울시 식품위생업 현황(구별)’ 통계. 단, ‘음식점(식품접객업)’만을 분리한 수치가 아닐 수 있으므로 참조용으로 활용하세요.")
+
